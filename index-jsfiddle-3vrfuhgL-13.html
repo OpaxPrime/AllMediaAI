@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSFiddle 3vrfuhgL</title>
+
+  <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f5f8fa;
+  color: #333;
+  line-height: 1.6;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 40px auto;
+  gap: 20px;
+  padding: 0 20px;
+}
+
+.main-content {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #1da1f2;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #657786;
+  margin-bottom: 30px;
+}
+
+.input-section,
+.platform-section,
+.result-section {
+  margin-bottom: 25px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e1e8ed;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+  border-color: #1da1f2;
+  outline: none;
+}
+
+.platform-section p {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.platform-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.platform-btn {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 30px;
+  background-color: #e1e8ed;
+  color: #657786;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.platform-btn:hover {
+  background-color: #ccd6dd;
+}
+
+.platform-btn.active {
+  background-color: #1da1f2;
+  color: white;
+}
+
+#generate-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background-color: #1da1f2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 25px;
+}
+
+#generate-btn:hover {
+  background-color: #0c8de4;
+}
+
+.result-section h2 {
+  margin-bottom: 10px;
+  color: #14171a;
+}
+
+.result-box,
+.explanation-box {
+  padding: 15px;
+  border: 2px solid #e1e8ed;
+  border-radius: 5px;
+  background-color: #f5f8fa;
+  min-height: 70px;
+  margin-bottom: 15px;
+}
+
+/* Enhanced SEO Explanation Styles */
+.explanation-section {
+  margin-bottom: 15px;
+  border: 1px solid #e1e8ed;
+  border-radius: 5px;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.explanation-section-header {
+  background-color: #f5f8fa;
+  padding: 15px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.explanation-section-header:hover {
+  background-color: #e1e8ed;
+}
+
+.explanation-section-header.active {
+  background-color: #1da1f2;
+  color: white;
+}
+
+.explanation-section-header.active .expand-icon {
+  transform: rotate(45deg);
+  color: white;
+}
+
+.expand-icon {
+  transition:
+    transform 0.3s,
+    color 0.2s;
+  font-size: 18px;
+}
+
+.explanation-section-content {
+  padding: 0 20px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  background-color: white;
+}
+
+.explanation-section-content strong {
+  color: #1da1f2;
+  font-weight: 600;
+}
+
+.explanation-section-content em {
+  color: #657786;
+  font-style: italic;
+}
+
+.explanation-section-content ul {
+  padding-left: 25px;
+  margin: 15px 0;
+  list-style-type: none;
+}
+
+.explanation-section-content li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+  position: relative;
+}
+
+.explanation-section-content li::before {
+  content: "•";
+  color: #1da1f2;
+  font-weight: bold;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+}
+
+.explanation-section-content h4 {
+  margin: 20px 0 15px;
+  color: #14171a;
+  font-size: 16px;
+  border-bottom: 2px solid #e1e8ed;
+  padding-bottom: 8px;
+}
+
+.analytics {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.metric {
+  background-color: #f5f8fa;
+  padding: 15px;
+  border-radius: 5px;
+  flex: 1;
+  margin: 0 5px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.metric-label {
+  font-size: 14px;
+  color: #657786;
+}
+
+.metric-value {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  color: #14171a;
+  margin-top: 8px;
+}
+
+#copy-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background-color: #657786;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#copy-btn:hover {
+  background-color: #556776;
+}
+
+/* Social Icons */
+.social-icons {
+  display: flex;
+  justify-content: space-around;
+  background-color: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.social-icon {
+  color: #657786;
+  font-size: 24px;
+  transition: color 0.3s;
+}
+
+.social-icon:hover {
+  color: #1da1f2;
+}
+
+@media (max-width: 768px) {
+  .platform-buttons {
+    flex-direction: column;
+  }
+
+  .analytics {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .metric {
+    margin: 0 0 10px 0;
+  }
+
+  .explanation-section-content li::before {
+    margin-left: -1.2em;
+  }
+}
+
+  </style>
+
+  
+</head>
+<body>
+  <!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SEO Title Generator</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <div class="main-content">
+        <h1>SEO Title Generator</h1>
+        <p class="subtitle">
+          Transform your titles for better social media engagement
+        </p>
+
+        <div class="input-section">
+          <label for="original-title">Enter your original title:</label>
+          <input
+            type="text"
+            id="original-title"
+            placeholder="Type your title here..."
+          />
+        </div>
+
+        <div class="platform-section">
+          <p>Select platform:</p>
+          <div class="platform-buttons">
+            <button class="platform-btn" data-platform="x">
+              <i class="fab fa-twitter"></i> X (Twitter)
+            </button>
+            <button class="platform-btn" data-platform="youtube">
+              <i class="fab fa-youtube"></i> YouTube
+            </button>
+            <button class="platform-btn" data-platform="instagram">
+              <i class="fab fa-instagram"></i> Instagram
+            </button>
+            <button class="platform-btn" data-platform="facebook">
+              <i class="fab fa-facebook"></i> Facebook
+            </button>
+          </div>
+        </div>
+
+        <button id="generate-btn">Generate SEO Title</button>
+
+        <div class="result-section">
+          <h2>Optimized Title:</h2>
+          <div id="result-title" class="result-box">
+            Your optimized title will appear here
+          </div>
+
+          <div class="seo-explanation">
+            <h3>SEO Advantages:</h3>
+            <div id="seo-explanation" class="explanation-box">
+              SEO explanation will appear here
+            </div>
+          </div>
+
+          <div class="analytics">
+            <div class="metric">
+              <span class="metric-label">Engagement Score:</span>
+              <span id="engagement-score" class="metric-value">0</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Character Count:</span>
+              <span id="char-count" class="metric-value">0</span>
+            </div>
+          </div>
+          <button id="copy-btn">Copy to Clipboard</button>
+        </div>
+      </div>
+
+      <div class="social-icons">
+        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="social-icon"><i class="fab fa-linkedin"></i></a>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // ======================
+    // DOM Elements
+    // ======================
+    const elements = {
+        originalTitle: document.getElementById('original-title'),
+        platformButtons: document.querySelectorAll('.platform-btn'),
+        generateBtn: document.getElementById('generate-btn'),
+        resultTitle: document.getElementById('result-title'),
+        seoExplanation: document.getElementById('seo-explanation'),
+        copyBtn: document.getElementById('copy-btn'),
+        loadingIndicator: document.createElement('div'),
+        socialIcons: document.querySelectorAll('.social-icon')
+    };
+
+    // ======================
+    // API Configuration
+    // ======================
+    const API_CONFIG = {
+        gemini: {
+            key: 'AIzaSyCHt8IWLWEmevLoOs7yF_f9J8zTcinuxCI',
+            endpoint: 'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent',
+            timeout: 20000 // 20 seconds
+        },
+        maxRetries: 3,
+        retryDelay: 1000 // 1 second initial delay
+    };
+
+    // ======================
+    // State Management
+    // ======================
+    const state = {
+        selectedPlatform: '',
+        isGenerating: false,
+        lastRequestTime: 0,
+        conversationHistory: [
+            {
+                role: 'system',
+                content: 'You are an SEO expert assistant. Provide helpful, concise advice about optimizing content for search engines and social media platforms.'
+            }
+        ]
+    };
+
+    // ======================
+    // Initialization
+    // ======================
+    function init() {
+        setupLoadingIndicator();
+        setupEventListeners();
+        setupSocialShare();
+    }
+
+    function setupLoadingIndicator() {
+        elements.loadingIndicator.className = 'loading-indicator';
+        elements.loadingIndicator.innerHTML = `
+            <div class="spinner"></div>
+            <span class="loading-text">Generating SEO Magic...</span>
+        `;
+        document.body.appendChild(elements.loadingIndicator);
+    }
+
+    function setupEventListeners() {
+        // Platform selection
+        elements.platformButtons.forEach(button => {
+            button.addEventListener('click', handlePlatformSelection);
+        });
+
+        // Generate button
+        elements.generateBtn.addEventListener('click', throttle(handleGenerateClick, 2000));
+
+        // Copy button
+        elements.copyBtn.addEventListener('click', handleCopyClick);
+
+        // Input field enter key
+        elements.originalTitle.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleGenerateClick();
+        });
+    }
+
+    function setupSocialShare() {
+        elements.socialIcons.forEach(icon => {
+            icon.addEventListener('click', function(e) {
+                e.preventDefault();
+                const platform = this.querySelector('i').className.split('-')[1];
+                shareOnSocial(platform);
+            });
+        });
+    }
+
+    // ======================
+    // Event Handlers
+    // ======================
+    function handlePlatformSelection(event) {
+        elements.platformButtons.forEach(btn => btn.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        state.selectedPlatform = event.currentTarget.getAttribute('data-platform');
+    }
+
+    async function handleGenerateClick() {
+        if (state.isGenerating) return;
+
+        const originalTitle = elements.originalTitle.value.trim();
+        if (!validateInputs(originalTitle)) return;
+
+        try {
+            setLoadingState(true);
+            
+            // Generate optimized title
+            const optimizedTitle = await retryApiCall(
+                () => generateOptimizedTitle(originalTitle),
+                API_CONFIG.maxRetries
+            );
+            
+            elements.resultTitle.textContent = optimizedTitle;
+            
+            // Generate SEO analysis
+            const analysis = await retryApiCall(
+                () => generateSEOAnalysis(originalTitle, optimizedTitle),
+                API_CONFIG.maxRetries
+            );
+            
+            elements.seoExplanation.innerHTML = formatAnalysis(analysis);
+            setupExpandableSections();
+            
+            // Add to conversation history
+            addToConversationHistory(originalTitle, optimizedTitle);
+            
+        } catch (error) {
+            handleGenerationError(error);
+        } finally {
+            setLoadingState(false);
+        }
+    }
+
+    function handleCopyClick() {
+        const textToCopy = elements.resultTitle.textContent;
+        if (!textToCopy || textToCopy === 'Your optimized title will appear here') return;
+        
+        navigator.clipboard.writeText(textToCopy)
+            .then(() => {
+                showTooltip(elements.copyBtn, 'Copied!');
+            })
+            .catch(err => {
+                console.error('Copy failed:', err);
+                showTooltip(elements.copyBtn, 'Failed to copy');
+            });
+    }
+
+    // ======================
+    // Core Business Logic
+    // ======================
+    async function generateOptimizedTitle(title) {
+        const prompt = `
+        As a Senior SEO Engineer with 15+ years of experience, optimize this title for ${state.selectedPlatform}:
+
+        Original Title: "${title}"
+        Platform: ${state.selectedPlatform}
+        Character Limit: ${getPlatformCharLimit()}
+        Target Audience: Social media marketers and content creators
+        
+        Requirements:
+        1. Keyword Optimization:
+        - Extract 3-5 core keywords
+        - Front-load primary keyword
+        - Include 1-2 LSI keywords
+        - Maintain 2-3% keyword density
+        
+        2. Platform-Specific Optimization:
+        ${getPlatformSpecificGuidelines()}
+        
+        3. Engagement Enhancement:
+        - Add ${state.selectedPlatform === 'instagram' ? '3-5' : '1-2'} relevant hashtags
+        - Include 1-2 power words
+        - Create curiosity gap
+        - Use emotional triggers
+        
+        4. Technical Requirements:
+        - Strictly ${getPlatformCharLimit()} character limit
+        - Mobile-friendly phrasing
+        - Clear SERP preview
+        
+        Return ONLY the optimized title without any additional text or explanations.
+        `;
+        
+        const response = await callGeminiAPI(prompt);
+        return cleanGeneratedTitle(response, getPlatformCharLimit());
+    }
+
+    async function generateSEOAnalysis(originalTitle, optimizedTitle) {
+        const prompt = `
+        Conduct a comprehensive SEO audit of this title optimization for ${state.selectedPlatform}:
+
+        Original Title: "${originalTitle}"
+        Optimized Title: "${optimizedTitle}"
+        Platform: ${state.selectedPlatform}
+        
+        Provide an in-depth analysis with these sections:
+        
+        ## 1. Keyword Strategy Analysis
+        - Keyword map comparison (original vs optimized)
+        - Search volume impact estimation
+        - TF-IDF score improvements
+        - Semantic relationships established
+        
+        ## 2. Platform Algorithm Optimization
+        - ${getPlatformAlgorithmFactors()}
+        - Character length effectiveness (${optimizedTitle.length}/${getPlatformCharLimit()})
+        - Engagement signal analysis
+        - Hashtag strategy evaluation
+        
+        ## 3. Psychological Effectiveness
+        - Attention capture mechanisms
+        - Emotional triggers identified (${countTriggers(optimizedTitle)})
+        - Curiosity gap effectiveness score
+        - Cognitive fluency assessment
+        
+        ## 4. Technical SEO Validation
+        - Readability score: ${calculateReadability(optimizedTitle)}/100
+        - Keyword prominence analysis
+        - Mobile rendering preview
+        - SERP display simulation
+        
+        ## 5. Performance Forecast
+        - Predicted CTR improvement
+        - Viral potential score
+        - Ranking difficulty assessment
+        - Competitive advantage analysis
+        
+        Format with markdown headers (##) and bullet points.
+        Include specific metrics and data references where possible.
+        Use professional SEO terminology.
+        `;
+        
+        return await callGeminiAPI(prompt, 1500);
+    }
+
+    // ======================
+    // API Communication
+    // ======================
+    async function callGeminiAPI(prompt, maxTokens = 1024) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.gemini.timeout);
+
+        try {
+            const response = await fetch(`${API_CONFIG.gemini.endpoint}?key=${API_CONFIG.gemini.key}`, {
+                method: 'POST',
+                signal: controller.signal,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }],
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: maxTokens,
+                        topP: 0.9
+                    },
+                    safetySettings: {
+                        category: 'HARM_CATEGORY_DEROGATORY',
+                        threshold: 'BLOCK_NONE'
+                    }
+                })
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error?.message || `API request failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
+                throw new Error('Invalid API response structure');
+            }
+
+            return data.candidates[0].content.parts[0].text;
+        } catch (error) {
+            clearTimeout(timeoutId);
+            throw new Error(`Gemini API error: ${error.message}`);
+        }
+    }
+
+    // ======================
+    // Platform-Specific Logic
+    // ======================
+    function getPlatformSpecificGuidelines() {
+        const guidelines = {
+            'x': `- Ideal length: 81-100 characters
+- Include 1-2 highly relevant hashtags
+- Use question structures when appropriate
+- Emotional polarity score > 0.5
+- Encourage replies and retweets`,
+            'youtube': `- Target length: 41-60 characters
+- Include numbers (3, 5, 7, 10)
+- Use brackets for metadata [2024]
+- Front-load primary keyword
+- Create curiosity with cliffhangers`,
+            'instagram': `- Optimal caption length: 5-7 words
+- Include 3-5 targeted hashtags in first comment
+- Use 2-3 relevant emojis
+- Add "Save"-triggering phrases
+- Encourage tagging and sharing`,
+            'facebook': `- Ideal preview text: 40-60 characters
+- Use question formats
+- Include "Tag friends" triggers
+- Maintain positive sentiment (>70%)
+- Encourage meaningful comments`
+        };
+        return guidelines[state.selectedPlatform];
+    }
+
+    function getPlatformAlgorithmFactors() {
+        const factors = {
+            'x': `Twitter's algorithm prioritizes:
+- Engagement velocity (likes, retweets, replies in first 30 minutes)
+- Hashtag relevance and popularity
+- Account authority and follower count
+- Media attachments (images/videos)`,
+            'youtube': `YouTube's algorithm favors:
+- Click-through rate (CTR)
+- Watch time and retention
+- Session duration
+- User engagement (likes, comments, shares)
+- Video quality and metadata`,
+            'instagram': `Instagram's algorithm weights:
+- Saves and shares
+- Comment quality and length
+- Explore page engagement
+- Reels completion rate
+- Account relevance and history`,
+            'facebook': `Facebook's algorithm prefers:
+- Meaningful interactions (long comments)
+- Shareability (private messages count)
+- Video completion rates
+- Post freshness and timeliness
+- Page authority and trust`
+        };
+        return factors[state.selectedPlatform];
+    }
+
+    function getPlatformCharLimit() {
+        const limits = {
+            'x': 280,
+            'youtube': 100,
+            'instagram': 2200,
+            'facebook': 80
+        };
+        return limits[state.selectedPlatform];
+    }
+
+    // ======================
+    // Analysis Utilities
+    // ======================
+    function countTriggers(title) {
+        const triggers = [
+            'proven', 'ultimate', 'secret', 'shocking', 
+            'breakthrough', 'instant', 'guaranteed', 'exclusive',
+            'master', 'essential', 'complete', 'definitive'
+        ];
+        return triggers.filter(t => title.toLowerCase().includes(t)).length;
+    }
+
+    function calculateReadability(title) {
+        // Flesch-Kincaid approximation
+        const words = title.split(/\s+/);
+        const syllables = words.reduce((acc, word) => acc + Math.max(1, Math.floor(word.length / 3)), 0);
+        const score = 206.835 - (1.015 * (words.length)) - (84.6 * (syllables / words.length));
+        return Math.min(100, Math.round(score));
+    }
+
+    function cleanGeneratedTitle(title, maxLength) {
+        let cleaned = title.replace(/^["']+|["']+$/g, '').trim();
+        if (cleaned.length > maxLength) {
+            cleaned = cleaned.substring(0, maxLength - 3);
+            const lastSpace = cleaned.lastIndexOf(' ');
+            if (lastSpace > maxLength - 20) {
+                cleaned = cleaned.substring(0, lastSpace);
+            }
+            cleaned += '...';
+        }
+        return cleaned;
+    }
+
+    function formatAnalysis(analysis) {
+        return analysis
+            .replace(/##\s+(.+?)\n/g, '</div><div class="analysis-section"><div class="section-header">$1<span class="expand-icon">+</span></div><div class="section-content">')
+            .replace(/-\s+\[(.+?)\]:/g, '<div class="analysis-metric"><strong>$1:</strong>')
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/(\d+%|\b[A-F][+-]?\b)/g, '<span class="metric-value">$1</span>')
+            .replace(/\n/g, '<br>')
+            .replace(/(Analysis:|Impact:|Score:)/g, '<br><em class="analysis-label">$1</em>')
+            + '</div>';
+    }
+
+    function setupExpandableSections() {
+        document.querySelectorAll('.section-header').forEach(header => {
+            header.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                content.style.maxHeight = content.style.maxHeight ? null : content.scrollHeight + "px";
+            });
+        });
+    }
+
+    // ======================
+    // Social Sharing
+    // ======================
+    function shareOnSocial(platform) {
+        const title = encodeURIComponent(elements.resultTitle.textContent);
+        let url = '';
+        
+        switch(platform) {
+            case 'twitter':
+                url = `https://twitter.com/intent/tweet?text=${title}`;
+                break;
+            case 'facebook':
+                url = `https://www.facebook.com/sharer/sharer.php?quote=${title}`;
+                break;
+            case 'instagram':
+                // Instagram doesn't support direct sharing via URL
+                showTooltip(elements.socialIcons[2], 'Copy title to share on Instagram');
+                return;
+            case 'linkedin':
+                url = `https://www.linkedin.com/sharing/share-offsite/?url=&title=${title}`;
+                break;
+        }
+        
+        if (url) {
+            window.open(url, '_blank', 'width=600,height=400');
+        }
+    }
+
+    // ======================
+    // Conversation History
+    // ======================
+    function addToConversationHistory(original, optimized) {
+        state.conversationHistory.push(
+            {
+                role: 'user',
+                content: `Original title for ${state.selectedPlatform}: ${original}`
+            },
+            {
+                role: 'assistant',
+                content: `Optimized title: ${optimized}`
+            }
+        );
+        
+        // Keep history manageable (last 10 messages)
+        if (state.conversationHistory.length > 20) {
+            state.conversationHistory = [
+                state.conversationHistory[0], // Keep system message
+                ...state.conversationHistory.slice(-18)
+            ];
+        }
+    }
+
+    // ======================
+    // UI Utilities
+    // ======================
+    function validateInputs(title) {
+        if (!title) {
+            showTooltip(elements.originalTitle, 'Please enter a title');
+            return false;
+        }
+        if (!state.selectedPlatform) {
+            showTooltip(elements.platformButtons[0], 'Please select a platform');
+            return false;
+        }
+        return true;
+    }
+
+    function setLoadingState(isLoading) {
+        state.isGenerating = isLoading;
+        elements.generateBtn.disabled = isLoading;
+        elements.loadingIndicator.style.display = isLoading ? 'flex' : 'none';
+        
+        if (isLoading) {
+            elements.resultTitle.textContent = 'Crafting your perfect title...';
+            elements.seoExplanation.textContent = 'Preparing in-depth analysis...';
+        }
+    }
+
+    function handleGenerationError(error) {
+        console.error('Generation error:', error);
+        elements.resultTitle.textContent = 'Error generating title';
+        elements.seoExplanation.innerHTML = `
+            <div class="error-message">
+                <h4>Analysis Failed</h4>
+                <p>${error.message || 'API service unavailable'}</p>
+                <p>Please try again later or check your connection.</p>
+            </div>
+        `;
+    }
+
+    function showTooltip(element, message) {
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip';
+        tooltip.textContent = message;
+        
+        const rect = element.getBoundingClientRect();
+        tooltip.style.left = `${rect.left + rect.width/2}px`;
+        tooltip.style.top = `${rect.top - 40}px`;
+        
+        document.body.appendChild(tooltip);
+        setTimeout(() => tooltip.remove(), 2000);
+    }
+
+    // ======================
+    // Performance Utilities
+    // ======================
+    async function retryApiCall(apiFunction, maxRetries, attempt = 1) {
+        try {
+            return await apiFunction();
+        } catch (error) {
+            if (attempt >= maxRetries) throw error;
+            
+            const delay = API_CONFIG.retryDelay * Math.pow(2, attempt - 1);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            
+            return retryApiCall(apiFunction, maxRetries, attempt + 1);
+        }
+    }
+
+    function throttle(func, limit) {
+        let lastFunc;
+        let lastRan;
+        return function() {
+            const context = this;
+            const args = arguments;
+            if (!lastRan) {
+                func.apply(context, args);
+                lastRan = Date.now();
+            } else {
+                clearTimeout(lastFunc);
+                lastFunc = setTimeout(function() {
+                    if ((Date.now() - lastRan) >= limit) {
+                        func.apply(context, args);
+                        lastRan = Date.now();
+                    }
+                }, limit - (Date.now() - lastRan));
+            }
+        };
+    }
+
+    // Initialize the application
+    init();
+});
+  </script>
+</body>
+</html>
