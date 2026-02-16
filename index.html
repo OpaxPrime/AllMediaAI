@@ -76,12 +76,6 @@
         </div>
       </div>
 
-      <div class="social-icons">
-        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-        <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
-        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-        <a href="#" class="social-icon"><i class="fab fa-linkedin"></i></a>
-      </div>
     </div>
     <!-- System Prompt Editor Modal -->
     <div id="system-prompt-modal" class="modal-overlay">
@@ -91,20 +85,19 @@
           <span id="close-modal" class="close-btn">&times;</span>
         </div>
         <div class="modal-body">
-          <label for="system-prompt">Customize AI Instructions:</label>
-          <textarea 
-            id="system-prompt" 
-            rows="8" 
-            placeholder="Enter your custom system prompt for the AI...">You are an expert SEO specialist and content creator assistant. Your job is to help content creators optimize their titles for various social media platforms. When given an original title and a target platform, you should:
-
-1. Analyze the original title for keywords and intent
-2. Optimize the title for the specific platform's algorithm and audience
-3. Enhance engagement potential while maintaining the original meaning
-4. Follow platform-specific best practices for titles
-5. Provide a detailed SEO analysis explaining your optimizations
-
-Always return both the optimized title and a comprehensive SEO analysis.</textarea>
+          <h4>Current Active Prompt:</h4>
+          <div id="current-system-prompt" class="current-prompt-display">
+            Loading current system prompt...
+          </div>
+          
+          <h4 style="margin-top: 20px;">Customize AI Instructions:</h4>
+          <label for="system-prompt">Enter your custom system prompt (leave blank to use default):</label>
+          <textarea
+            id="system-prompt"
+            rows="8"
+            placeholder="Enter your custom system prompt for the AI..."></textarea>
           <div class="modal-footer">
+            <button id="reset-system-prompt">Reset to Default</button>
             <button id="save-system-prompt">Save Prompt</button>
           </div>
         </div>
@@ -116,11 +109,43 @@ Always return both the optimized title and a comprehensive SEO analysis.</textar
       <i class="fas fa-cog"></i>
     </div>
 
+    <!-- Logout Button -->
+    <div id="logout-btn" class="floating-icon" title="Logout">
+      <i class="fas fa-sign-out-alt"></i>
+    </div>
+
     <!-- Dark Mode Toggle -->
     <div id="dark-mode-toggle" class="floating-icon" title="Toggle Dark Mode">
       <i class="fas fa-moon"></i>
     </div>
 
     <script src="script.js"></script>
+    <script>
+        // Check if user is authenticated
+        document.addEventListener('DOMContentLoaded', function() {
+            // Skip authentication check if we're on the login page
+            const isLoginPage = window.location.pathname.includes('login.html');
+            if (isLoginPage) return;
+            
+            // Check if user is logged in
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+                // Redirect to login page
+                window.location.href = 'login.html';
+            }
+            
+            // Setup logout functionality
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    // Clear authentication
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('userEmail');
+                    
+                    // Redirect to login page
+                    window.location.href = 'login.html';
+                });
+            }
+        });
+    </script>
   </body>
 </html>

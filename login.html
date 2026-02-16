@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SEO Title Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="main-content login-content">
+            <h1>SEO Title Generator</h1>
+            <p class="subtitle">Transform your titles for better social media engagement</p>
+
+            <div class="auth-form-container">
+                <div class="form-toggle">
+                    <button id="login-toggle" class="toggle-btn active">Login</button>
+                    <button id="signup-toggle" class="toggle-btn">Sign Up</button>
+                </div>
+
+                <form id="login-form" class="auth-form">
+                    <div class="input-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Login</button>
+                </form>
+
+                <form id="signup-form" class="auth-form hidden">
+                    <div class="input-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" placeholder="Create a password" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" placeholder="Confirm your password" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Sign Up</button>
+                </form>
+
+                <div class="auth-footer">
+                    <p><a href="#" id="forgot-password">Forgot Password?</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <div id="dark-mode-toggle" class="floating-icon" title="Toggle Dark Mode">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Login/Signup specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                window.location.href = 'index.html';
+            }
+            
+            // Form toggling
+            const loginToggle = document.getElementById('login-toggle');
+            const signupToggle = document.getElementById('signup-toggle');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+
+            loginToggle.addEventListener('click', function() {
+                loginToggle.classList.add('active');
+                signupToggle.classList.remove('active');
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+            });
+
+            signupToggle.addEventListener('click', function() {
+                signupToggle.classList.add('active');
+                loginToggle.classList.remove('active');
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            });
+
+            // Form submission handlers
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                // Simple validation
+                if (!email || !password) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                // In a real app, this would be an API call to verify credentials
+                // For now, we'll simulate successful login
+                console.log('Login attempt with:', email, password);
+                
+                // Redirect to main app after successful login
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                window.location.href = 'index.html';
+            });
+
+            signupForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                
+                // Validation
+                if (!email || !password || !confirmPassword) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    alert('Password must be at least 6 characters');
+                    return;
+                }
+                
+                // In a real app, this would be an API call to register the user
+                // For now, we'll simulate successful signup
+                console.log('Signup attempt with:', email, password);
+                
+                // Redirect to main app after successful signup
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>
