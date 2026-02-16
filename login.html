@@ -91,11 +91,11 @@
             // Form submission handlers
             loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                
+
                 const email = document.getElementById('login-email').value;
                 const password = document.getElementById('login-password').value;
                 const loginButton = loginForm.querySelector('.submit-btn');
-                
+
                 // Simple validation
                 if (!email || !password) {
                     alert('Please fill in all fields');
@@ -107,6 +107,7 @@
                 loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
 
                 try {
+                    console.log('Attempting to login with email:', email); // Debug log
                     const response = await fetch('/api/auth/login', {
                         method: 'POST',
                         headers: {
@@ -115,14 +116,35 @@
                         body: JSON.stringify({ email, password })
                     });
 
+                    console.log('Response status:', response.status); // Debug log
+                    console.log('Response content-type:', response.headers.get('content-type')); // Debug log
+
+                    // Check if response is OK before parsing JSON
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Login response error:', errorText);
+                        alert('Server error: ' + errorText);
+                        return;
+                    }
+
+                    // Check content type before parsing JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        const responseText = await response.text();
+                        console.error('Non-JSON response received:', responseText);
+                        alert('Server returned unexpected response format. Please contact support.');
+                        return;
+                    }
+
                     const data = await response.json();
+                    console.log('Response data:', data); // Debug log
 
                     if (data.success) {
                         // Store token and user info
                         localStorage.setItem('token', data.token);
                         localStorage.setItem('userEmail', data.user.email);
                         localStorage.setItem('isLoggedIn', 'true');
-                        
+
                         // Redirect to main app
                         window.location.href = 'index.html';
                     } else {
@@ -130,7 +152,8 @@
                     }
                 } catch (error) {
                     console.error('Login error:', error);
-                    alert('An error occurred during login. Please try again.');
+                    console.error('Error details:', error.message); // More detailed error logging
+                    alert('An error occurred during login. Please try again.\n\nDetails: ' + error.message);
                 } finally {
                     // Re-enable button
                     loginButton.disabled = false;
@@ -140,7 +163,7 @@
 
             signupForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                
+
                 const email = document.getElementById('signup-email').value;
                 const password = document.getElementById('signup-password').value;
                 const confirmPassword = document.getElementById('confirm-password').value;
@@ -167,6 +190,7 @@
                 signupButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing up...';
 
                 try {
+                    console.log('Attempting to register with email:', email); // Debug log
                     const response = await fetch('/api/auth/register', {
                         method: 'POST',
                         headers: {
@@ -175,14 +199,35 @@
                         body: JSON.stringify({ email, password })
                     });
 
+                    console.log('Response status:', response.status); // Debug log
+                    console.log('Response content-type:', response.headers.get('content-type')); // Debug log
+
+                    // Check if response is OK before parsing JSON
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Registration response error:', errorText);
+                        alert('Server error: ' + errorText);
+                        return;
+                    }
+
+                    // Check content type before parsing JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        const responseText = await response.text();
+                        console.error('Non-JSON response received:', responseText);
+                        alert('Server returned unexpected response format. Please contact support.');
+                        return;
+                    }
+
                     const data = await response.json();
+                    console.log('Response data:', data); // Debug log
 
                     if (data.success) {
                         // Store token and user info
                         localStorage.setItem('token', data.token);
                         localStorage.setItem('userEmail', data.user.email);
                         localStorage.setItem('isLoggedIn', 'true');
-                        
+
                         // Redirect to main app
                         window.location.href = 'index.html';
                     } else {
@@ -190,7 +235,8 @@
                     }
                 } catch (error) {
                     console.error('Registration error:', error);
-                    alert('An error occurred during registration. Please try again.');
+                    console.error('Error details:', error.message); // More detailed error logging
+                    alert('An error occurred during registration. Please try again.\n\nDetails: ' + error.message);
                 } finally {
                     // Re-enable button
                     signupButton.disabled = false;

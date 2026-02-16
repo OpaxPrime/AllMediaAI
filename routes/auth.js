@@ -21,13 +21,17 @@ const verifyPassword = async (password, hash) => {
 // Register endpoint
 router.post('/register', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    console.log('=== REGISTER REQUEST START ==='); // Enhanced logging
+    console.log('Request body:', req.body); // Log the full request body
+    console.log('Request headers:', req.headers); // Log headers
+    console.log('Registration attempt for email:', req.body.email); // Log registration attempt
 
-    console.log('Registration attempt for email:', email); // Log registration attempt
+    const { email, password } = req.body;
 
     // Validate input
     if (!email || !password) {
       console.log('Registration failed: Missing email or password');
+      console.log('=== REGISTER REQUEST END ===');
       return res.status(400).json({
         success: false,
         message: 'Email and password are required'
@@ -38,6 +42,7 @@ router.post('/register', async (req, res) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       console.log('Registration failed: Invalid email format', email);
+      console.log('=== REGISTER REQUEST END ===');
       return res.status(400).json({
         success: false,
         message: 'Please provide a valid email address'
@@ -47,6 +52,7 @@ router.post('/register', async (req, res) => {
     // Password strength validation
     if (password.length < 6) {
       console.log('Registration failed: Password too short', password.length);
+      console.log('=== REGISTER REQUEST END ===');
       return res.status(400).json({
         success: false,
         message: 'Password must be at least 6 characters long'
@@ -59,17 +65,19 @@ router.post('/register', async (req, res) => {
     let existingUser;
     try {
       existingUser = await new Promise((resolve, reject) => {
-        db.get('SELECT id FROM users WHERE email = ?', [email], (err, row) => {
+        db.get('SELECT id, email FROM users WHERE email = ?', [email], (err, row) => {
           if (err) {
             console.error('Database error checking existing user:', err);
             reject(err);
           } else {
+            console.log('Existing user check result:', row);
             resolve(row);
           }
         });
       });
     } catch (dbError) {
       console.error('Database error during user existence check:', dbError);
+      console.log('=== REGISTER REQUEST END ===');
       return res.status(500).json({
         success: false,
         message: 'Database error occurred'
@@ -78,6 +86,7 @@ router.post('/register', async (req, res) => {
 
     if (existingUser) {
       console.log('Registration failed: User already exists', email);
+      console.log('=== REGISTER REQUEST END ===');
       return res.status(409).json({
         success: false,
         message: 'User with this email already exists'
@@ -88,8 +97,10 @@ router.post('/register', async (req, res) => {
     let passwordHash;
     try {
       passwordHash = await hashPassword(password);
+      console.log('Password successfully hashed');
     } catch (hashError) {
       console.error('Password hashing error:', hashError);
+      console.log('=== REGISTER REQUEST END ===');
       return res.status(500).json({
         success: false,
         message: 'Error processing password'
@@ -108,6 +119,7 @@ router.post('/register', async (req, res) => {
               console.error('Database insert error:', err);
               reject(err);
             } else {
+              console.log('User inserted with lastID:', this.lastID);
               resolve(this);
             }
           }
@@ -115,6 +127,7 @@ router.post('/register', async (req, res) => {
       });
     } catch (insertError) {
       console.error('Database insertion error:', insertError);
+      console.log('=== REGISTER REQUEST END ===');
       return res.status(500).json({
         success: false,
         message: 'Error saving user to database'
@@ -129,8 +142,10 @@ router.post('/register', async (req, res) => {
         JWT_SECRET,
         { expiresIn: '24h' }
       );
+      console.log('JWT token created successfully');
     } catch (tokenError) {
       console.error('Token creation error:', tokenError);
+      console.log('=== REGISTER REQUEST END ===');
       return res.status(500).json({
         success: false,
         message: 'Error creating authentication token'
@@ -138,6 +153,16 @@ router.post('/register', async (req, res) => {
     }
 
     console.log('Registration successful for user ID:', result.lastID);
+    console.log('Response being sent:', {
+      success: true,
+      message: 'User registered successfully',
+      user: {
+        id: result.lastID,
+        email: email
+      }
+    });
+    console.log('=== REGISTER REQUEST END ===');
+    
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
@@ -150,6 +175,7 @@ router.post('/register', async (req, res) => {
 
   } catch (error) {
     console.error('Unexpected registration error:', error);
+    console.log('=== REGISTER REQUEST END ===');
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -160,13 +186,17 @@ router.post('/register', async (req, res) => {
 // Login endpoint
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    console.log('=== LOGIN REQUEST START ==='); // Enhanced logging
+    console.log('Request body:', req.body); // Log the full request body
+    console.log('Request headers:', req.headers); // Log headers
+    console.log('Login attempt for email:', req.body.email); // Log login attempt
 
-    console.log('Login attempt for email:', email); // Log login attempt
+    const { email, password } = req.body;
 
     // Validate input
     if (!email || !password) {
       console.log('Login failed: Missing email or password');
+      console.log('=== LOGIN REQUEST END ===');
       return res.status(400).json({
         success: false,
         message: 'Email and password are required'
@@ -187,6 +217,7 @@ router.post('/login', async (req, res) => {
               console.error('Database error finding user:', err);
               reject(err);
             } else {
+              console.log('User lookup result:', row);
               resolve(row);
             }
           }
@@ -194,6 +225,7 @@ router.post('/login', async (req, res) => {
       });
     } catch (dbError) {
       console.error('Database error during user lookup:', dbError);
+      console.log('=== LOGIN REQUEST END ===');
       return res.status(500).json({
         success: false,
         message: 'Database error occurred'
@@ -202,6 +234,7 @@ router.post('/login', async (req, res) => {
 
     if (!user) {
       console.log('Login failed: User not found', email);
+      console.log('=== LOGIN REQUEST END ===');
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password'
@@ -212,8 +245,10 @@ router.post('/login', async (req, res) => {
     let isValidPassword;
     try {
       isValidPassword = await verifyPassword(password, user.password_hash);
+      console.log('Password verification result:', isValidPassword);
     } catch (verifyError) {
       console.error('Password verification error:', verifyError);
+      console.log('=== LOGIN REQUEST END ===');
       return res.status(500).json({
         success: false,
         message: 'Error verifying password'
@@ -222,6 +257,7 @@ router.post('/login', async (req, res) => {
 
     if (!isValidPassword) {
       console.log('Login failed: Invalid password for user', email);
+      console.log('=== LOGIN REQUEST END ===');
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password'
@@ -236,8 +272,10 @@ router.post('/login', async (req, res) => {
         JWT_SECRET,
         { expiresIn: '24h' }
       );
+      console.log('JWT token created successfully');
     } catch (tokenError) {
       console.error('Token creation error:', tokenError);
+      console.log('=== LOGIN REQUEST END ===');
       return res.status(500).json({
         success: false,
         message: 'Error creating authentication token'
@@ -245,6 +283,16 @@ router.post('/login', async (req, res) => {
     }
 
     console.log('Login successful for user ID:', user.id);
+    console.log('Response being sent:', {
+      success: true,
+      message: 'Login successful',
+      user: {
+        id: user.id,
+        email: user.email
+      }
+    });
+    console.log('=== LOGIN REQUEST END ===');
+    
     res.json({
       success: true,
       message: 'Login successful',
@@ -257,6 +305,7 @@ router.post('/login', async (req, res) => {
 
   } catch (error) {
     console.error('Unexpected login error:', error);
+    console.log('=== LOGIN REQUEST END ===');
     res.status(500).json({
       success: false,
       message: 'Internal server error'
