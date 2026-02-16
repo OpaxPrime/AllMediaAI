@@ -67,7 +67,7 @@
             if (localStorage.getItem('isLoggedIn') === 'true') {
                 window.location.href = 'index.html';
             }
-            
+
             // Form toggling
             const loginToggle = document.getElementById('login-toggle');
             const signupToggle = document.getElementById('signup-toggle');
@@ -89,57 +89,113 @@
             });
 
             // Form submission handlers
-            loginForm.addEventListener('submit', function(e) {
+            loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
+                
                 const email = document.getElementById('login-email').value;
                 const password = document.getElementById('login-password').value;
+                const loginButton = loginForm.querySelector('.submit-btn');
                 
                 // Simple validation
                 if (!email || !password) {
                     alert('Please fill in all fields');
                     return;
                 }
-                
-                // In a real app, this would be an API call to verify credentials
-                // For now, we'll simulate successful login
-                console.log('Login attempt with:', email, password);
-                
-                // Redirect to main app after successful login
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', email);
-                window.location.href = 'index.html';
+
+                // Disable button and show loading state
+                loginButton.disabled = true;
+                loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+
+                try {
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Store token and user info
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('userEmail', data.user.email);
+                        localStorage.setItem('isLoggedIn', 'true');
+                        
+                        // Redirect to main app
+                        window.location.href = 'index.html';
+                    } else {
+                        alert(data.message || 'Login failed');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('An error occurred during login. Please try again.');
+                } finally {
+                    // Re-enable button
+                    loginButton.disabled = false;
+                    loginButton.textContent = 'Login';
+                }
             });
 
-            signupForm.addEventListener('submit', function(e) {
+            signupForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
+                
                 const email = document.getElementById('signup-email').value;
                 const password = document.getElementById('signup-password').value;
                 const confirmPassword = document.getElementById('confirm-password').value;
-                
+                const signupButton = signupForm.querySelector('.submit-btn');
+
                 // Validation
                 if (!email || !password || !confirmPassword) {
                     alert('Please fill in all fields');
                     return;
                 }
-                
+
                 if (password !== confirmPassword) {
                     alert('Passwords do not match');
                     return;
                 }
-                
+
                 if (password.length < 6) {
                     alert('Password must be at least 6 characters');
                     return;
                 }
-                
-                // In a real app, this would be an API call to register the user
-                // For now, we'll simulate successful signup
-                console.log('Signup attempt with:', email, password);
-                
-                // Redirect to main app after successful signup
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', email);
-                window.location.href = 'index.html';
+
+                // Disable button and show loading state
+                signupButton.disabled = true;
+                signupButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing up...';
+
+                try {
+                    const response = await fetch('/api/auth/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Store token and user info
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('userEmail', data.user.email);
+                        localStorage.setItem('isLoggedIn', 'true');
+                        
+                        // Redirect to main app
+                        window.location.href = 'index.html';
+                    } else {
+                        alert(data.message || 'Registration failed');
+                    }
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    alert('An error occurred during registration. Please try again.');
+                } finally {
+                    // Re-enable button
+                    signupButton.disabled = false;
+                    signupButton.textContent = 'Sign Up';
+                }
             });
         });
     </script>

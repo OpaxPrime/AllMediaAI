@@ -77,37 +77,6 @@
       </div>
 
     </div>
-    <!-- System Prompt Editor Modal -->
-    <div id="system-prompt-modal" class="modal-overlay">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>System Prompt Editor</h3>
-          <span id="close-modal" class="close-btn">&times;</span>
-        </div>
-        <div class="modal-body">
-          <h4>Current Active Prompt:</h4>
-          <div id="current-system-prompt" class="current-prompt-display">
-            Loading current system prompt...
-          </div>
-          
-          <h4 style="margin-top: 20px;">Customize AI Instructions:</h4>
-          <label for="system-prompt">Enter your custom system prompt (leave blank to use default):</label>
-          <textarea
-            id="system-prompt"
-            rows="8"
-            placeholder="Enter your custom system prompt for the AI..."></textarea>
-          <div class="modal-footer">
-            <button id="reset-system-prompt">Reset to Default</button>
-            <button id="save-system-prompt">Save Prompt</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- System Prompt Icon -->
-    <div id="system-prompt-icon" class="floating-icon" title="Edit System Prompt">
-      <i class="fas fa-cog"></i>
-    </div>
 
     <!-- Logout Button -->
     <div id="logout-btn" class="floating-icon" title="Logout">
@@ -126,21 +95,23 @@
             // Skip authentication check if we're on the login page
             const isLoginPage = window.location.pathname.includes('login.html');
             if (isLoginPage) return;
-            
-            // Check if user is logged in
-            if (localStorage.getItem('isLoggedIn') !== 'true') {
+
+            // Check if user is logged in by verifying token exists
+            const token = localStorage.getItem('token');
+            if (!token) {
                 // Redirect to login page
                 window.location.href = 'login.html';
             }
-            
+
             // Setup logout functionality
             const logoutBtn = document.getElementById('logout-btn');
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', function() {
                     // Clear authentication
+                    localStorage.removeItem('token');
                     localStorage.removeItem('isLoggedIn');
                     localStorage.removeItem('userEmail');
-                    
+
                     // Redirect to login page
                     window.location.href = 'login.html';
                 });
