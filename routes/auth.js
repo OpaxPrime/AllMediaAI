@@ -23,70 +23,121 @@ router.post('/register', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log('Registration attempt for email:', email); // Log registration attempt
+
     // Validate input
     if (!email || !password) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Email and password are required' 
+      console.log('Registration failed: Missing email or password');
+      return res.status(400).json({
+        success: false,
+        message: 'Email and password are required'
       });
     }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Please provide a valid email address' 
+      console.log('Registration failed: Invalid email format', email);
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid email address'
       });
     }
 
     // Password strength validation
     if (password.length < 6) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Password must be at least 6 characters long' 
+      console.log('Registration failed: Password too short', password.length);
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters long'
       });
     }
 
     const db = getDB();
 
     // Check if user already exists
-    const existingUser = await new Promise((resolve, reject) => {
-      db.get('SELECT id FROM users WHERE email = ?', [email], (err, row) => {
-        if (err) reject(err);
-        else resolve(row);
+    let existingUser;
+    try {
+      existingUser = await new Promise((resolve, reject) => {
+        db.get('SELECT id FROM users WHERE email = ?', [email], (err, row) => {
+          if (err) {
+            console.error('Database error checking existing user:', err);
+            reject(err);
+          } else {
+            resolve(row);
+          }
+        });
       });
-    });
+    } catch (dbError) {
+      console.error('Database error during user existence check:', dbError);
+      return res.status(500).json({
+        success: false,
+        message: 'Database error occurred'
+      });
+    }
 
     if (existingUser) {
-      return res.status(409).json({ 
-        success: false, 
-        message: 'User with this email already exists' 
+      console.log('Registration failed: User already exists', email);
+      return res.status(409).json({
+        success: false,
+        message: 'User with this email already exists'
       });
     }
 
     // Hash the password
-    const passwordHash = await hashPassword(password);
+    let passwordHash;
+    try {
+      passwordHash = await hashPassword(password);
+    } catch (hashError) {
+      console.error('Password hashing error:', hashError);
+      return res.status(500).json({
+        success: false,
+        message: 'Error processing password'
+      });
+    }
 
     // Insert new user into database
-    const result = await new Promise((resolve, reject) => {
-      db.run(
-        'INSERT INTO users (email, password_hash) VALUES (?, ?)', 
-        [email, passwordHash], 
-        function(err) {
-          if (err) reject(err);
-          else resolve(this);
-        }
-      );
-    });
+    let result;
+    try {
+      result = await new Promise((resolve, reject) => {
+        db.run(
+          'INSERT INTO users (email, password_hash) VALUES (?, ?)',
+          [email, passwordHash],
+          function(err) {
+            if (err) {
+              console.error('Database insert error:', err);
+              reject(err);
+            } else {
+              resolve(this);
+            }
+          }
+        );
+      });
+    } catch (insertError) {
+      console.error('Database insertion error:', insertError);
+      return res.status(500).json({
+        success: false,
+        message: 'Error saving user to database'
+      });
+    }
 
     // Create JWT token
-    const token = jwt.sign(
-      { userId: result.lastID, email: email },
-      JWT_SECRET,
-      { expiresIn: '24h' }
-    );
+    let token;
+    try {
+      token = jwt.sign(
+        { userId: result.lastID, email: email },
+        JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+    } catch (tokenError) {
+      console.error('Token creation error:', tokenError);
+      return res.status(500).json({
+        success: false,
+        message: 'Error creating authentication token'
+      });
+    }
 
+    console.log('Registration successful for user ID:', result.lastID);
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
@@ -98,7 +149,7 @@ router.post('/register', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('Unexpected registration error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -111,51 +162,89 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log('Login attempt for email:', email); // Log login attempt
+
     // Validate input
     if (!email || !password) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Email and password are required' 
+      console.log('Login failed: Missing email or password');
+      return res.status(400).json({
+        success: false,
+        message: 'Email and password are required'
       });
     }
 
     const db = getDB();
 
     // Find user by email
-    const user = await new Promise((resolve, reject) => {
-      db.get(
-        'SELECT id, email, password_hash FROM users WHERE email = ?', 
-        [email], 
-        (err, row) => {
-          if (err) reject(err);
-          else resolve(row);
-        }
-      );
-    });
+    let user;
+    try {
+      user = await new Promise((resolve, reject) => {
+        db.get(
+          'SELECT id, email, password_hash FROM users WHERE email = ?',
+          [email],
+          (err, row) => {
+            if (err) {
+              console.error('Database error finding user:', err);
+              reject(err);
+            } else {
+              resolve(row);
+            }
+          }
+        );
+      });
+    } catch (dbError) {
+      console.error('Database error during user lookup:', dbError);
+      return res.status(500).json({
+        success: false,
+        message: 'Database error occurred'
+      });
+    }
 
     if (!user) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Invalid email or password' 
+      console.log('Login failed: User not found', email);
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
       });
     }
 
     // Verify password
-    const isValidPassword = await verifyPassword(password, user.password_hash);
+    let isValidPassword;
+    try {
+      isValidPassword = await verifyPassword(password, user.password_hash);
+    } catch (verifyError) {
+      console.error('Password verification error:', verifyError);
+      return res.status(500).json({
+        success: false,
+        message: 'Error verifying password'
+      });
+    }
+
     if (!isValidPassword) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Invalid email or password' 
+      console.log('Login failed: Invalid password for user', email);
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
       });
     }
 
     // Create JWT token
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      JWT_SECRET,
-      { expiresIn: '24h' }
-    );
+    let token;
+    try {
+      token = jwt.sign(
+        { userId: user.id, email: user.email },
+        JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+    } catch (tokenError) {
+      console.error('Token creation error:', tokenError);
+      return res.status(500).json({
+        success: false,
+        message: 'Error creating authentication token'
+      });
+    }
 
+    console.log('Login successful for user ID:', user.id);
     res.json({
       success: true,
       message: 'Login successful',
@@ -167,7 +256,7 @@ router.post('/login', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Unexpected login error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'
